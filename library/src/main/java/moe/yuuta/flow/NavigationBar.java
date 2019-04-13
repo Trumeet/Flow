@@ -65,11 +65,11 @@ class NavigationBar {
         setListener(ButtonPosition.RIGHT, config.getRightListener());
     }
 
-    private void setNavigationBarVisibility(@View.Visibility int visibility) {
+    private void setNavigationBarVisibility(int visibility) {
         mRoot.setVisibility(visibility);
     }
 
-    private void setButtonVisibility(@NonNull ButtonPosition position, @View.Visibility int visibility) {
+    private void setButtonVisibility(@NonNull ButtonPosition position, int visibility) {
         switch (position) {
             case LEFT:
                 mLeftButton.setVisibility(visibility);
