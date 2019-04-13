@@ -39,13 +39,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class Page1 extends PageFragment {
-        public Page1() {
-            mInfo = new FlowInfo(new HeaderConfig("Page 1", "lol", false), null);
-        }
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            mInfo = new FlowInfo(new HeaderConfig("Page 1", "lol", false), null);
         }
 
         @Nullable
@@ -58,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class Page2 extends PageFragment {
-        public Page2() {
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
             mInfo = new FlowInfo(new HeaderConfig("Page 2", "built with love", false), null);
         }
 
@@ -76,7 +76,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class Page3 extends PageFragment {
-        public Page3() {
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
             mInfo = new FlowInfo(new HeaderConfig("Page 3", "zzz~", true), null);
         }
 
@@ -97,7 +99,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class Page4 extends PageFragment {
-        public Page4() {
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
             mInfo = new FlowInfo(new HeaderConfig("Page 4", "just a counter", false), null);
         }
 

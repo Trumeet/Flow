@@ -42,7 +42,7 @@ public final class FlowFragment extends Fragment implements IFlowFragment, View.
         }
         mPages = pages;
         // Because this method can be called before setting up the layout, so we need to schedule it until the layout is set up.
-        notifyCurrentFlowInfoUpdated();
+        // notifyCurrentFlowInfoUpdated();
     }
 
     /**
