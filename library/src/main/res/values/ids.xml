@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="flow_host_header" type="id" />
+    <item name="flow_host_pager" type="id" />
+    <item name="flow_host_nav" type="id" />
+
+    <item name="flow_nav_left_button" type="id" />
+    <item name="flow_nav_right_button" type="id" />
+
+    <item name="flow_header_title" type="id" />
+    <item name="flow_header_subtitle" type="id" />
+    <item name="flow_header_progressbar" type="id" />
+    <item name="flow_header_progressbar_guideline" type="id" />
+</resources>

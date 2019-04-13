@@ -1,0 +1,4 @@
+<resources>
+    <string name="flow_nav_bar_previous">Back</string>
+    <string name="flow_nav_bar_next">Next</string>
+</resources>
