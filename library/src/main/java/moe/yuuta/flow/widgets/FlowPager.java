@@ -1,14 +1,12 @@
 package moe.yuuta.flow.widgets;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 public class FlowPager extends ViewPager {
@@ -20,30 +18,19 @@ public class FlowPager extends ViewPager {
         super(context, attrs);
     }
 
-    // Thanks to https://stackoverflow.com/a/32488566/6792243
+    // Thanks to https://stackoverflow.com/a/20784791/6792243
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int height = 0;
+        for(int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            int h = child.getMeasuredHeight();
+            if(h > height) height = h;
+        }
 
-        if(null != getAdapter()) {
-            int height = 0;
-            View child = ((FragmentStatePagerAdapter) getAdapter()).getItem(getCurrentItem()).getView();
-            if (child != null) {
-                child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-                height = child.getMeasuredHeight();
-                // TODO: Support api-14 and api-15?
-                if (Build.VERSION.SDK_INT >= 16 && height < getMinimumHeight()) {
-                    height = getMinimumHeight();
-                }
-            }
-
-            int newHeight = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
-            if (getLayoutParams().height != 0 && heightMeasureSpec != newHeight) {
-                getLayoutParams().height = height;
-
-            } else {
-                heightMeasureSpec = newHeight;
-            }
+        if (height != 0) {
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);

@@ -113,6 +113,7 @@ public final class FlowFragment extends Fragment implements IFlowFragment, View.
         if (savedInstanceState != null) {
             Log.d(TAG, "onViewCreated - restore " + savedInstanceState.getInt(ARG_CURRENT, -1));
             mPager.setCurrentItem(savedInstanceState.getInt(ARG_CURRENT, 0));
+            // TODO: updateUI() should be preformed here, but I did not find a appropriate way to retrieve FlowInfo. The temporarily workaround is to notify update when the view re-creates.
         }
         if (mUIUpdateScheduled) {
             updateUI();
