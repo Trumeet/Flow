@@ -1,6 +1,7 @@
 package moe.yuuta.flow;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,20 +10,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Host fragment
+ * The Host fragment. It is marked as final because it was set to remain instance.
  */
-public class FlowFragment extends Fragment implements IFlowFragment, View.OnClickListener {
+public final class FlowFragment extends Fragment implements IFlowFragment, View.OnClickListener {
+    private static final String TAG = "FlowFragment";
+
     private List<PageFragment> mPages = new ArrayList<>(0);
     // true: after the view settles, update the UI immediately.
     private volatile boolean mUIUpdateScheduled;
+
+    private static final String ARG_CURRENT = FlowFragment.class.getName() + ".ARG_CURRENT";
+    private static final String ARG_UI_UPDATE_SCHEDULED = FlowFragment.class.getName() + ".ARG_UI_UPDATE_SCHEDULED";
 
     private Header mHeader;
     private ViewPager mPager;
@@ -73,18 +78,17 @@ public class FlowFragment extends Fragment implements IFlowFragment, View.OnClic
         }
     }
 
-    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (getView() != null) return getView();
         final View view = inflater.inflate(R.layout.fragment_flow, container, false);
         mHeader = new Header(view.<ConstraintLayout>findViewById(R.id.flow_host_header));
         mNav = new NavigationBar(view.<ConstraintLayout>findViewById(R.id.flow_host_nav));
         mPager = view.findViewById(R.id.flow_host_pager);
-        mPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager()) {
+        mPager.setAdapter(new FragmentStatePagerAdapter(getChildFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
-                PageFragment fragment = mPages.get(position);
-                return fragment;
+                return mPages.get(position);
             }
 
             @Override
@@ -93,13 +97,11 @@ public class FlowFragment extends Fragment implements IFlowFragment, View.OnClic
             }
         });
         mPager.addOnPageChangeListener(mPageListener);
-        getChildFragmentManager().registerFragmentLifecycleCallbacks(mCallback, false);
         return view;
     }
 
     @Override
     public void onDestroyView() {
-        getChildFragmentManager().unregisterFragmentLifecycleCallbacks(mCallback);
         mPager.removeOnPageChangeListener(mPageListener);
         super.onDestroyView();
     }
@@ -107,6 +109,11 @@ public class FlowFragment extends Fragment implements IFlowFragment, View.OnClic
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d(TAG, "onViewCreated");
+        if (savedInstanceState != null) {
+            Log.d(TAG, "onViewCreated - restore " + savedInstanceState.getInt(ARG_CURRENT, -1));
+            mPager.setCurrentItem(savedInstanceState.getInt(ARG_CURRENT, 0));
+        }
         if (mUIUpdateScheduled) {
             updateUI();
             mUIUpdateScheduled = false;
@@ -142,16 +149,6 @@ public class FlowFragment extends Fragment implements IFlowFragment, View.OnClic
     public void switchToFlow(int index) {
         mPager.setCurrentItem(index, true);
     }
-
-    private FragmentManager.FragmentLifecycleCallbacks mCallback = new FragmentManager.FragmentLifecycleCallbacks() {
-        @Override
-        public void onFragmentPreCreated(@NonNull FragmentManager fm, @NonNull Fragment f, @Nullable Bundle savedInstanceState) {
-            if (f instanceof PageFragment) {
-                final PageFragment pf = (PageFragment) f;
-                pf.setHostFragment(FlowFragment.this);
-            }
-        }
-    };
 
     private ViewPager.OnPageChangeListener mPageListener = new ViewPager.OnPageChangeListener() {
         @Override
@@ -190,5 +187,31 @@ public class FlowFragment extends Fragment implements IFlowFragment, View.OnClic
     @NonNull
     public View.OnClickListener getGeneralFlowNavListener() {
         return this;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // To save the child fragment instances
+        setRetainInstance(true);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "save");
+        if (mPager != null) outState.putInt(ARG_CURRENT, mPager.getCurrentItem());
+        if (mPager != null) Log.d(TAG, "current " + mPager.getCurrentItem());
+        outState.putBoolean(ARG_UI_UPDATE_SCHEDULED, mUIUpdateScheduled);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d(TAG, "onActivityCreated");
+        if (savedInstanceState != null) {
+            Log.d(TAG, "restore");
+            mUIUpdateScheduled = savedInstanceState.getBoolean(ARG_UI_UPDATE_SCHEDULED, false);
+        }
     }
 }

@@ -8,7 +8,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 public class FlowPager extends ViewPager {
@@ -27,7 +27,7 @@ public class FlowPager extends ViewPager {
 
         if(null != getAdapter()) {
             int height = 0;
-            View child = ((FragmentPagerAdapter) getAdapter()).getItem(getCurrentItem()).getView();
+            View child = ((FragmentStatePagerAdapter) getAdapter()).getItem(getCurrentItem()).getView();
             if (child != null) {
                 child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
                 height = child.getMeasuredHeight();

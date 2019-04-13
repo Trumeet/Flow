@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,9 +27,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         Log.i(TAG, "onCreate()");
-        if (mFragment == null) {
+        if (mFragment == null && savedInstanceState == null) {
             mFragment = new FlowFragment();
-            mFragment.setPages(Arrays.asList(new Page1(), new Page2(), new Page3()));
+            mFragment.setPages(Arrays.asList(new Page1(), new Page2(), new Page3(), new Page4()));
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(android.R.id.content, mFragment)
@@ -92,6 +93,34 @@ public class MainActivity extends AppCompatActivity {
             Vibrator vibrator = (Vibrator) requireContext().getSystemService(VIBRATOR_SERVICE);
             vibrator.vibrate(new long[]{50L, 30L}, 1);
             return true;
+        }
+    }
+
+    public static class Page4 extends PageFragment {
+        public Page4() {
+            mInfo = new FlowInfo(new HeaderConfig("Page 4", "just a counter", false), null);
+        }
+
+        // TODO: The FlowFragment keeps the instance, maybe we don't want that happened to child fragments.
+        private int mCount;
+
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            Button button = new Button(requireContext());
+            button.setMinHeight(20);
+            button.setText("+1s");
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCount++;
+                    HeaderConfig config = mInfo.getHeaderConfig();
+                    config.setSubtitleText(Integer.toString(mCount));
+                    mInfo.setHeaderConfig(config);
+                    getHostFragment().notifyCurrentFlowInfoUpdated();
+                }
+            });
+            return button;
         }
     }
 
